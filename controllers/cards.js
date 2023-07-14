@@ -11,10 +11,7 @@ function getCards(req, res) {
 function addCard(req, res) {
   async function request() {
     const { name, link } = req.body;
-    const newCard = await Card.create(
-      { name, link, owner: req.user._id },
-      { runValidators: true }
-    );
+    const newCard = await Card.create({ name, link, owner: req.user._id });
     return newCard;
   }
   getResponse(res, request);
@@ -54,7 +51,7 @@ function removeLike(req, res) {
         $pull: { likes: userId },
       },
       { new: true }
-    );
+    ).orFail();
     return newLikes;
   }
   getResponse(res, request);
