@@ -1,9 +1,9 @@
 import Card from "../models/card.js";
-import { getResponse, sendResponse } from "../utils/utils.js";
+import { getResponse } from "../utils/utils.js";
 function getCards(req, res) {
   async function request() {
     const cards = await Card.find({});
-    sendResponse(res, cards, "cards");
+    return cards;
   }
   getResponse(res, request);
 }
@@ -11,8 +11,11 @@ function getCards(req, res) {
 function addCard(req, res) {
   async function request() {
     const { name, link } = req.body;
-    const newCard = await Card.create({ name, link, owner: req.user._id });
-    sendResponse(res, newCard, "cards");
+    const newCard = await Card.create(
+      { name, link, owner: req.user._id },
+      { runValidators: true }
+    );
+    return newCard;
   }
   getResponse(res, request);
 }
@@ -20,8 +23,8 @@ function addCard(req, res) {
 function deleteCard(req, res) {
   async function request() {
     const card = req.params.cardId;
-    const data = await Card.deleteOne({ _id: card });
-    sendResponse(res, data, "cards");
+    const data = await Card.deleteOne({ _id: card }).orFail();
+    return data;
   }
   getResponse(res, request);
 }
@@ -35,8 +38,7 @@ function addLike(req, res) {
       { $addToSet: { likes: userId } },
       { new: true }
     );
-
-    sendResponse(res, newLikes, "cards");
+    return newLikes;
   }
 
   getResponse(res, request);
@@ -53,7 +55,7 @@ function removeLike(req, res) {
       },
       { new: true }
     );
-    sendResponse(res, newLikes, "cards");
+    return newLikes;
   }
   getResponse(res, request);
 }
