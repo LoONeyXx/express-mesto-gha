@@ -11,8 +11,8 @@ function getAllUsers(req, res) {
 
 function getUser(req, res) {
   async function sendRequire() {
-    const { _id, name, about, avatar } = await User.findById(req.params.userId);
-    sendResponse(res, { _id, name, about, avatar }, "users");
+    const user = await User.findById(req.params.userId);
+    sendResponse(res, user, "users");
   }
   getResponse(res, sendRequire);
 }

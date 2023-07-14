@@ -1,7 +1,10 @@
 import mongoose from "mongoose";
 
 function sendError(res, error) {
-  if (error instanceof mongoose.Error.ValidationError) {
+  if (
+    error instanceof mongoose.Error.ValidationError ||
+    error instanceof mongoose.Error.CastError
+  ) {
     res.status(400).send({ message: "Переденны некорректные данные" });
     return;
   }
