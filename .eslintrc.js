@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   env: {
     browser: true,
     es2021: true,
@@ -21,7 +21,7 @@ module.exports = {
   },
   rules: {
     "no-unused-vars": [
-      "warning",
+      "error",
       { vars: "all", args: "after-used", ignoreRestSiblings: false },
     ],
     eqeqeq: "off",

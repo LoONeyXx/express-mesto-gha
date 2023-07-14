@@ -20,7 +20,6 @@ function sendError(res, error) {
 export async function getResponse(res, callback) {
   try {
     const data = await callback();
-    console.log(data)
     res.status(200).send(data);
   } catch (error) {
     sendError(res, error);
