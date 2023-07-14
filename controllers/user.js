@@ -21,8 +21,7 @@ function addUser(req, res) {
   async function sendRequire() {
     const { name = "", about = "", avatar = "" } = req.body;
     const user = await User.create(
-      { name, about, avatar },
-      { runValidators: true }
+      { name, about, avatar }
     );
     return user;
   }

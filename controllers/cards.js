@@ -34,7 +34,7 @@ function addLike(req, res) {
       id,
       { $addToSet: { likes: userId } },
       { new: true }
-    );
+    ).orFail();
     return newLikes;
   }
 
