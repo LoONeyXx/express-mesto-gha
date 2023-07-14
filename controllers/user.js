@@ -1,9 +1,11 @@
 import User from "../models/user.js";
-import { getResponse } from "../utils/utils.js";
+
+import getResponse from "../utils/utils.js";
+
 function getAllUsers(req, res) {
   async function request() {
     const users = await User.find({});
-    return users;
+    return { data: users };
   }
   getResponse(res, request);
 }
@@ -11,7 +13,7 @@ function getAllUsers(req, res) {
 function getUser(req, res) {
   async function request() {
     const user = await User.findById(req.params.userId).orFail();
-    return user;
+    return { data: user };
   }
   getResponse(res, request);
 }
@@ -20,7 +22,7 @@ function addUser(req, res) {
   async function request() {
     const { name, about, avatar } = req.body;
     const user = await User.create({ name, about, avatar });
-    return user;
+    return { data: user, status: 201 };
   }
 
   getResponse(res, request);
@@ -33,14 +35,16 @@ function updateUser(req, res) {
     const user = await User.findByIdAndUpdate(
       id,
       {
-        $set: { name: name, about: about, avatar: avatar },
+        $set: { name, about, avatar },
       },
-      { returnOriginal: false, runValidators: true }
+      { returnOriginal: false, runValidators: true },
     ).orFail();
-    return user;
+    return { data: user };
   }
 
   getResponse(res, request);
 }
 
-export { updateUser, addUser, getAllUsers, getUser };
+export {
+  updateUser, addUser, getAllUsers, getUser,
+};

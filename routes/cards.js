@@ -6,6 +6,7 @@ import {
   addLike,
   removeLike,
 } from "../controllers/cards.js";
+
 const router = express.Router();
 
 router.get("/cards", getCards);

@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   env: {
     browser: true,
     es2021: true,
@@ -20,10 +20,11 @@ export default {
     sourceType: "module",
   },
   rules: {
-    "no-unused-vars": [
+    "import/extensions": [
       "error",
-      { vars: "all", args: "after-used", ignoreRestSiblings: false },
+      "always",
     ],
+    "no-underscore-dangle": ["off", { allow: ["foo_", "_bar"] }],
     eqeqeq: "off",
     curly: "error",
     quotes: ["error", "double"],

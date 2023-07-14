@@ -1,6 +1,7 @@
+import express from "express";
 import userRouter from "./user.js";
 import cardsRouter from "./cards.js";
-import express from "express";
+
 const router = express.Router();
 
 router.use(userRouter);

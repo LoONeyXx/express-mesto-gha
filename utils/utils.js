@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 function sendError(res, error) {
   if (
-    error instanceof mongoose.Error.ValidationError ||
-    error instanceof mongoose.Error.CastError
+    error instanceof mongoose.Error.ValidationError
+    || error instanceof mongoose.Error.CastError
   ) {
     res.status(400).send({ message: "Переданы некорректные данные" });
     return;
@@ -17,10 +17,10 @@ function sendError(res, error) {
   res.status(500).send({ message: "Что то пошло не так :(" });
 }
 
-export async function getResponse(res, callback) {
+export default async function getResponse(res, callback) {
   try {
-    const data = await callback();
-    res.status(200).send(data);
+    const { data, status = 200 } = await callback();
+    res.status(status).send(data);
   } catch (error) {
     sendError(res, error);
   }
