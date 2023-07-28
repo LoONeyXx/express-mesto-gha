@@ -24,7 +24,7 @@ function deleteCard(req, res, next) {
   async function request() {
     const { cardId } = req.params;
     const userId = req.user._id;
-    const card = await Card.findById({ _id: cardId });
+    const card = await Card.findById({ _id: cardId }).orFail();
     if (card.owner.toString() === userId) {
       const data = await Card.deleteOne({ _id: cardId });
       return { data };
