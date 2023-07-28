@@ -29,7 +29,7 @@ function deleteCard(req, res, next) {
   getResponse(res, request, next);
 }
 
-function addLike(req, res) {
+function addLike(req, res, next) {
   async function request() {
     const userId = req.user._id;
     const id = req.params.cardId;
@@ -41,10 +41,10 @@ function addLike(req, res) {
     return { data: newLikes };
   }
 
-  getResponse(res, request);
+  getResponse(res, request, next);
 }
 
-function removeLike(req, res) {
+function removeLike(req, res, next) {
   async function request() {
     const userId = req.user._id;
     const id = req.params.cardId;
@@ -57,7 +57,7 @@ function removeLike(req, res) {
     ).orFail();
     return { data: newLikes };
   }
-  getResponse(res, request);
+  getResponse(res, request, next);
 }
 
 export {
