@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { celebrate, Joi } from "celebrate";
 import AuthError from "../errors/auth-error.js";
+import { pattern } from "./config.js";
 
 export function sendError(error, req, res, next) {
   if (error instanceof AuthError) {
@@ -50,7 +51,7 @@ export const idCardValidator = () => celebrate({
 
 export const bodyCardValidator = () => celebrate({
   body: Joi.object().keys({
-    title: Joi.string().required().min(2).max(30),
+    name: Joi.string().required().min(2).max(30),
     link: Joi.string().uri().required(),
   }),
 });
@@ -67,7 +68,7 @@ export const userValidatorAuth = () => celebrate({
 
 export const userValidatorUpdate = () => celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().uri().min(8),
+    avatar: Joi.string().regex(pattern).min(8),
     name: Joi.string().max(30).min(2),
     about: Joi.string().max(30).min(2),
   }),

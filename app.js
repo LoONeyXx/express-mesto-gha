@@ -7,8 +7,7 @@ import helmet from "helmet";
 import { errors } from "celebrate";
 import router from "./routes/index.js";
 import { sendError } from "./utils/utils.js";
-
-const { PORT = 3000, BASE_URL = "mongodb://127.0.0.1:27017/mestodb" } = process.env;
+import { PORT, BASE_URL } from "./utils/config.js";
 
 const app = express();
 app.use(helmet());

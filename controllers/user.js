@@ -13,7 +13,8 @@ function getAllUsers(req, res, next) {
 
 function getUser(req, res, next) {
   async function request() {
-    const user = await User.findById(req.user._id).orFail();
+    const id = req.params.userId || req.user._id;
+    const user = await User.findById(id).orFail();
     return { data: user };
   }
   getResponse(res, request, next);

@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import uniqueValidator from "mongoose-unique-validator";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import AuthError from "../errors/auth-error.js";
+import { pattern } from "../utils/config.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -36,8 +36,8 @@ const userSchema = new mongoose.Schema(
     avatar: {
       type: String,
       validate: {
-        validator: (v) => /(http[s]?:\/\/)[A-Za-zа-яА-яё0-9-._~:/?#[\]@!$&'()*+,;=]+/.test(v),
-        message: "Некорректный eMail поля 'email' ",
+        validator: (v) => pattern.test(v),
+        message: "Некорректный URL поля 'avatar' ",
       },
       default: "https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png",
     },
