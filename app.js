@@ -11,7 +11,7 @@ import { sendError } from "./utils/utils.js";
 
 dotenv.config();
 
-const { PORT, BASE_URL } = process.env;
+const { PORT = 3000, BASE_URL } = process.env;
 
 const app = express();
 app.use(helmet());
