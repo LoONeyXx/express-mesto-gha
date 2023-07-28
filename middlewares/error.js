@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 import AuthError from "../errors/auth-error.js";
+import AccessError from "../errors/access-error.js";
 
 export default function handleError(error, req, res, next) {
-  if (error instanceof AuthError) {
+  if (error instanceof AuthError || error instanceof AccessError) {
     res.status(error.statusCode).send({ message: error.message });
     return;
   }

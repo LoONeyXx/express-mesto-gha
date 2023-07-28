@@ -1,5 +1,6 @@
 import Card from "../models/card.js";
 import getResponse from "../middlewares/getResponse.js";
+import AccessError from "../errors/access-error.js";
 
 function getCards(req, res) {
   async function request() {
@@ -21,10 +22,14 @@ function addCard(req, res) {
 
 function deleteCard(req, res, next) {
   async function request() {
-    const card = req.params.cardId;
-    const owner = req.user._id;
-    const data = await Card.deleteOne({ owner, _id: card }).orFail();
-    return { data };
+    const { cardId } = req.params;
+    const userId = req.user._id;
+    const card = await Card.findById({ _id: cardId });
+    if (card.owner.toString() === userId) {
+      const data = await Card.deleteOne({ _id: cardId });
+      return { data };
+    }
+    throw new AccessError("У вас нет прав на удаление чужих карточек");
   }
   getResponse(res, request, next);
 }
