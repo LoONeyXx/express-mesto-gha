@@ -13,7 +13,7 @@ function getAllUsers(req, res, next) {
 
 function getUser(req, res, next) {
   async function request() {
-    const user = await User.findById(req.params.userId).orFail();
+    const user = await User.findById(req.user._id).orFail();
     return { data: user };
   }
   getResponse(res, request, next);
@@ -32,7 +32,9 @@ function addUser(req, res, next) {
       password: hash,
       email,
     });
-    return { data: newUser, status: 201 };
+    const userData = newUser.toObject();
+    delete userData.password;
+    return { data: userData, status: 201 };
   }
 
   getResponse(res, request, next);
