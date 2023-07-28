@@ -1,22 +1,61 @@
 import mongoose from "mongoose";
+import uniqueValidator from "mongoose-unique-validator";
+import validator from "validator";
+import bcrypt from "bcryptjs";
+import AuthError from "../errors/auth-error.js";
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    minlength: 2,
-    maxlength: 30,
-    required: true,
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+      validate: {
+        validator: (v) => validator.isEmail(v),
+        message: "Некорректный URL поля 'email' ",
+      },
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: 8,
+      select: false,
+    },
+    name: {
+      type: String,
+      minlength: [2, "Минимальная длина поля 'name' - 2"],
+      maxlength: [30, "Максимальная длина поля 'name' - 30"],
+      default: "Жак-Ив Кусто",
+    },
+    about: {
+      type: String,
+      minlength: [2, "Минимальная длина поля 'about' - 2"],
+      maxlength: [30, "Максимальная длина поля 'about' - 30"],
+      default: "Исследователь",
+    },
+    avatar: {
+      type: String,
+      validate: {
+        validator: (v) => /(http[s]?:\/\/)[A-Za-zа-яА-яё0-9-._~:/?#[\]@!$&'()*+,;=]+/.test(v),
+        message: "Некорректный eMail поля 'email' ",
+      },
+      default: "https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png",
+    },
   },
-  about: {
-    type: String,
-    minlength: 2,
-    maxlength: 30,
-    required: true,
-  },
-  avatar: {
-    type: String,
-    required: true,
-  },
-});
-
-export default mongoose.model("user", userSchema);
+  { versionKey: false },
+);
+// userSchema.plugin(uniqueValidator);
+userSchema.statics.findUserByCredentials = async function (email, password) {
+  const user = await this.findOne({ email }).select("+password");
+  if (!user) {
+    throw new AuthError("Такого пользователя не существует");
+  }
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (isMatch) {
+    return user;
+  }
+  throw new AuthError("Неправильный пароль");
+};
+const model = mongoose.model("user", userSchema);
+model.createIndexes();
+export default model;

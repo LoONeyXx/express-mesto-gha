@@ -20,9 +20,15 @@ module.exports = {
     sourceType: "module",
   },
   rules: {
-    "import/extensions": [
-      "error",
-      "always",
+    "func-names": ["off", "always"],
+    "linebreak-style": 0,
+    "no-unused-vars": ["off", { vars: "all", args: "after-used", ignoreRestSiblings: false }],
+    "import/extensions": ["error", "always"],
+    "import/no-import-module-exports": [
+      "off",
+      {
+        exceptions: ["**/*/some-file.js"],
+      },
     ],
     "no-underscore-dangle": ["off", { allow: ["foo_", "_bar"] }],
     eqeqeq: "off",

@@ -1,4 +1,5 @@
 import express from "express";
+import { idCardValidator, bodyCardValidator } from "../utils/utils.js";
 import {
   getCards,
   addCard,
@@ -10,9 +11,9 @@ import {
 const router = express.Router();
 
 router.get("/cards", getCards);
-router.post("/cards", addCard);
-router.delete("/cards/:cardId", deleteCard);
-router.put("/cards/:cardId/likes", addLike);
-router.delete("/cards/:cardId/likes", removeLike);
+router.post("/cards", bodyCardValidator(), addCard);
+router.delete("/cards/:cardId", idCardValidator(), deleteCard);
+router.put("/cards/:cardId/likes", idCardValidator(), addLike);
+router.delete("/cards/:cardId/likes", idCardValidator(), removeLike);
 
 export default router;

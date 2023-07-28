@@ -1,34 +1,58 @@
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import User from "../models/user.js";
+import { getResponse } from "../utils/utils.js";
 
-import getResponse from "../utils/utils.js";
-
-function getAllUsers(req, res) {
+function getAllUsers(req, res, next) {
   async function request() {
     const users = await User.find({});
     return { data: users };
   }
-  getResponse(res, request);
+  getResponse(res, request, next);
 }
 
-function getUser(req, res) {
+function getUser(req, res, next) {
   async function request() {
     const user = await User.findById(req.params.userId).orFail();
     return { data: user };
   }
-  getResponse(res, request);
+  getResponse(res, request, next);
 }
 
-function addUser(req, res) {
+function addUser(req, res, next) {
   async function request() {
-    const { name, about, avatar } = req.body;
-    const user = await User.create({ name, about, avatar });
-    return { data: user, status: 201 };
+    const {
+      name, about, avatar, email, password,
+    } = req.body;
+    const hash = await bcrypt.hash(password, 10);
+    const newUser = await User.create({
+      name,
+      about,
+      avatar,
+      password: hash,
+      email,
+    });
+    return { data: newUser, status: 201 };
   }
 
-  getResponse(res, request);
+  getResponse(res, request, next);
 }
 
-function updateUser(req, res) {
+function login(req, res, next) {
+  async function require() {
+    const { email, password } = req.body;
+    const user = await User.findUserByCredentials(email, password);
+    const token = jwt.sign({ _id: user._id }, "super-strong-secret", { expiresIn: "7d" });
+    res.cookie("jwt", token, {
+      maxAge: 36000000,
+      httpOnly: true,
+    });
+    return { data: { _id: user._id } };
+  }
+  getResponse(res, require, next);
+}
+
+function updateUser(req, res, next) {
   async function request() {
     const { name, about, avatar } = req.body;
     const id = req.user._id;
@@ -37,14 +61,17 @@ function updateUser(req, res) {
       {
         $set: { name, about, avatar },
       },
-      { returnOriginal: false, runValidators: true },
+      {
+        returnOriginal: false,
+        runValidators: true,
+      },
     ).orFail();
     return { data: user };
   }
 
-  getResponse(res, request);
+  getResponse(res, request, next);
 }
 
 export {
-  updateUser, addUser, getAllUsers, getUser,
+  updateUser, addUser, getAllUsers, getUser, login,
 };

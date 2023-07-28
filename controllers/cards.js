@@ -1,6 +1,6 @@
 import Card from "../models/card.js";
 
-import getResponse from "../utils/utils.js";
+import { getResponse } from "../utils/utils.js";
 
 function getCards(req, res) {
   async function request() {
@@ -13,19 +13,21 @@ function getCards(req, res) {
 function addCard(req, res) {
   async function request() {
     const { name, link } = req.body;
+
     const newCard = await Card.create({ name, link, owner: req.user._id });
     return { data: newCard, status: 201 };
   }
   getResponse(res, request);
 }
 
-function deleteCard(req, res) {
+function deleteCard(req, res, next) {
   async function request() {
     const card = req.params.cardId;
-    const data = await Card.deleteOne({ _id: card }).orFail();
+    const owner = req.user._id;
+    const data = await Card.deleteOne({ owner, _id: card }).orFail();
     return { data };
   }
-  getResponse(res, request);
+  getResponse(res, request, next);
 }
 
 function addLike(req, res) {
