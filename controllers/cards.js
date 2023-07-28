@@ -1,6 +1,5 @@
 import Card from "../models/card.js";
-
-import { getResponse } from "../utils/utils.js";
+import getResponse from "../middlewares/getResponse.js";
 
 function getCards(req, res) {
   async function request() {

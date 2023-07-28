@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
-import { getResponse } from "../utils/utils.js";
+import getResponse from "../middlewares/getResponse.js";
 
 function getAllUsers(req, res, next) {
   async function request() {

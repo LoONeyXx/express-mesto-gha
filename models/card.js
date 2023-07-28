@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import validator from "validator";
+import { pattern } from "../utils/config.js";
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -12,7 +12,7 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: [true, "Поле 'link' должно быть заполнено"],
     validate: {
-      validator: (v) => validator.isURL(v),
+      validator: (v) => pattern.test(v),
       message: "Некорректный URL",
     },
   },

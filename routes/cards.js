@@ -1,5 +1,5 @@
 import express from "express";
-import { idCardValidator, bodyCardValidator } from "../utils/utils.js";
+import { idCardValidator, bodyCardValidator } from "../utils/validators.js";
 import {
   getCards,
   addCard,
