@@ -60,7 +60,7 @@ async function addLike(req, res, next) {
     ).orFail();
     res.status(200).send({ data: newLikes });
   } catch (err) {
-    if (err instanceof mongoose.Error.NotFoundError) {
+    if (err instanceof mongoose.Error.DocumentNotFoundError) {
       next(new NotFoundError("Такой карточки не существует"));
       return;
     }

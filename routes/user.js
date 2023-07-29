@@ -8,7 +8,7 @@ import {
 } from "../utils/validators.js";
 
 const router = express.Router();
-router.post("/signup", addUser);
+router.post("/signup", userValidatorAuth(), addUser);
 router.post("/signin", userValidatorAuth(), login);
 router.use(auth);
 router.get("/users", getAllUsers);

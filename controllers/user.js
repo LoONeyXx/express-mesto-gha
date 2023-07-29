@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import User from "../models/user.js";
 import ValidationError from "../errors/validation-error.js";
 import NotFoundError from "../errors/not-found-error.js";
+import AlreadyExistError from "../errors/already-exist-error.js";
 
 async function getAllUsers(req, res, next) {
   try {
@@ -50,6 +51,10 @@ async function addUser(req, res, next) {
         || err instanceof mongoose.Error.CastError
     ) {
       next(new ValidationError(err));
+      return;
+    }
+    if (err.code === 11000) {
+      next(new AlreadyExistError("Пользователь с таким Email уже существует"));
       return;
     }
     next(err);
