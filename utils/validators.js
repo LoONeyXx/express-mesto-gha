@@ -3,7 +3,7 @@ import { pattern } from "./config.js";
 
 export const idCardValidator = () => celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
+    cardId: Joi.string().hex().alphanum().length(24),
   }),
 });
 
@@ -26,14 +26,19 @@ export const userValidatorAuth = () => celebrate({
 
 export const userValidatorUpdate = () => celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().regex(pattern).min(8),
     name: Joi.string().max(30).min(2),
     about: Joi.string().max(30).min(2),
   }),
 });
 
+export const userAvatarValidator = () => celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().regex(pattern).min(8),
+  }),
+});
+
 export const userIdValidator = () => celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().alphanum().length(24),
+    userId: Joi.string().hex().alphanum().length(24),
   }),
 });

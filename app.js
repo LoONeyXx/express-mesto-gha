@@ -6,7 +6,7 @@ import bodyParser from "body-parser";
 import helmet from "helmet";
 import { errors } from "celebrate";
 import router from "./routes/index.js";
-import handleError from "./middlewares/error.js";
+import errorHandler from "./middlewares/error.js";
 import { PORT, BASE_URL } from "./utils/config.js";
 
 const app = express();
@@ -18,5 +18,5 @@ app.use(bodyParser.json());
 app.use(router);
 mongoose.connect(BASE_URL);
 app.use(errors());
-app.use(handleError);
+app.use(errorHandler);
 app.listen(PORT);

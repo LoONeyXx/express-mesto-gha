@@ -22,7 +22,6 @@ module.exports = {
   rules: {
     "func-names": ["off", "always"],
     "linebreak-style": 0,
-    "no-unused-vars": ["off", { vars: "all", args: "after-used", ignoreRestSiblings: false }],
     "import/extensions": ["error", "always"],
     "import/no-import-module-exports": [
       "off",
@@ -30,7 +29,7 @@ module.exports = {
         exceptions: ["**/*/some-file.js"],
       },
     ],
-    "no-underscore-dangle": ["off", { allow: ["foo_", "_bar"] }],
+    "no-underscore-dangle": ["off", { allow: ["_id"] }],
     eqeqeq: "off",
     curly: "error",
     quotes: ["error", "double"],

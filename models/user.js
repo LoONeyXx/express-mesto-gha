@@ -18,7 +18,6 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      minlength: 8,
       select: false,
     },
     name: {
@@ -48,7 +47,7 @@ const userSchema = new mongoose.Schema(
 userSchema.statics.findUserByCredentials = async function (email, password) {
   const user = await this.findOne({ email }).select("+password");
   if (!user) {
-    throw new AuthError("Такого пользователя не существует");
+    throw new AuthError("Неверный Email");
   }
   const isMatch = await bcrypt.compare(password, user.password);
   if (isMatch) {

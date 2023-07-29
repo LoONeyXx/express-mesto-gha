@@ -1,27 +1,35 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import User from "../models/user.js";
-import getResponse from "../middlewares/getResponse.js";
+import ValidationError from "../errors/validation-error.js";
+import NotFoundError from "../errors/not-found-error.js";
 
-function getAllUsers(req, res, next) {
-  async function request() {
+async function getAllUsers(req, res, next) {
+  try {
     const users = await User.find({});
-    return { data: users };
+    res.status(200).send({ data: users });
+  } catch (err) {
+    next(new NotFoundError("Ничего не найдено"));
   }
-  getResponse(res, request, next);
 }
 
-function getUser(req, res, next) {
-  async function request() {
+async function getUser(req, res, next) {
+  try {
     const id = req.params.userId || req.user._id;
     const user = await User.findById(id).orFail();
-    return { data: user };
+    res.status(200).send({ data: user });
+  } catch (err) {
+    if (err instanceof mongoose.Error.DocumentNotFoundError) {
+      next(new NotFoundError("Такого пользователя не существует"));
+      return;
+    }
+    next(err);
   }
-  getResponse(res, request, next);
 }
 
-function addUser(req, res, next) {
-  async function request() {
+async function addUser(req, res, next) {
+  try {
     const {
       name, about, avatar, email, password,
     } = req.body;
@@ -35,14 +43,21 @@ function addUser(req, res, next) {
     });
     const userData = newUser.toObject();
     delete userData.password;
-    return { data: userData, status: 201 };
+    res.status(201).send({ data: userData });
+  } catch (err) {
+    if (
+      err instanceof mongoose.Error.ValidationError
+        || err instanceof mongoose.Error.CastError
+    ) {
+      next(new ValidationError(err));
+      return;
+    }
+    next(err);
   }
-
-  getResponse(res, request, next);
 }
 
-function login(req, res, next) {
-  async function require() {
+async function login(req, res, next) {
+  try {
     const { email, password } = req.body;
     const user = await User.findUserByCredentials(email, password);
     const token = jwt.sign({ _id: user._id }, "super-strong-secret", { expiresIn: "7d" });
@@ -50,13 +65,14 @@ function login(req, res, next) {
       maxAge: 36000000,
       httpOnly: true,
     });
-    return { data: { _id: user._id } };
+    res.status(200).send({ _id: user._id });
+  } catch (err) {
+    next(err);
   }
-  getResponse(res, require, next);
 }
 
-function updateUser(req, res, next) {
-  async function request() {
+async function updateUser(req, res, next) {
+  try {
     const { name, about, avatar } = req.body;
     const id = req.user._id;
     const user = await User.findByIdAndUpdate(
@@ -69,10 +85,21 @@ function updateUser(req, res, next) {
         runValidators: true,
       },
     ).orFail();
-    return { data: user };
+    res.status(200).send({ data: user });
+  } catch (err) {
+    if (
+      err instanceof mongoose.Error.ValidationError
+        || err instanceof mongoose.Error.CastError
+    ) {
+      next(new ValidationError(err));
+      return;
+    }
+    if (err instanceof mongoose.Error.NotFoundError) {
+      next(new NotFoundError("Такого пользователя не существует"));
+      return;
+    }
+    next(err);
   }
-
-  getResponse(res, request, next);
 }
 
 export {

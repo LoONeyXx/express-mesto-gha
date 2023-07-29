@@ -1,41 +1,56 @@
+import mongoose from "mongoose";
 import Card from "../models/card.js";
-import getResponse from "../middlewares/getResponse.js";
 import AccessError from "../errors/access-error.js";
+import ValidationError from "../errors/validation-error.js";
+import NotFoundError from "../errors/not-found-error.js";
 
-function getCards(req, res) {
-  async function request() {
+async function getCards(req, res, next) {
+  try {
     const cards = await Card.find({});
-    return { data: cards };
+    res.status(200).send({ data: cards });
+  } catch (err) {
+    next(err);
   }
-  getResponse(res, request);
 }
 
-function addCard(req, res) {
-  async function request() {
+async function addCard(req, res, next) {
+  try {
     const { name, link } = req.body;
-
     const newCard = await Card.create({ name, link, owner: req.user._id });
-    return { data: newCard, status: 201 };
+    res.status(201).send({ data: newCard });
+  } catch (err) {
+    if (
+      err instanceof mongoose.Error.ValidationError
+          || err instanceof mongoose.Error.CastError
+    ) {
+      next(new ValidationError(err));
+      return;
+    }
+    next(err);
   }
-  getResponse(res, request);
 }
 
-function deleteCard(req, res, next) {
-  async function request() {
+async function deleteCard(req, res, next) {
+  try {
     const { cardId } = req.params;
     const userId = req.user._id;
     const card = await Card.findById({ _id: cardId }).orFail();
     if (card.owner.toString() === userId) {
       const data = await Card.deleteOne({ _id: cardId });
-      return { data };
+      res.status(200).send({ data });
     }
     throw new AccessError("У вас нет прав на удаление чужих карточек");
+  } catch (err) {
+    if (err instanceof mongoose.Error.DocumentNotFoundError) {
+      next(new NotFoundError("Такой карточки не существует"));
+      return;
+    }
+    next(err);
   }
-  getResponse(res, request, next);
 }
 
-function addLike(req, res, next) {
-  async function request() {
+async function addLike(req, res, next) {
+  try {
     const userId = req.user._id;
     const id = req.params.cardId;
     const newLikes = await Card.findByIdAndUpdate(
@@ -43,14 +58,18 @@ function addLike(req, res, next) {
       { $addToSet: { likes: userId } },
       { new: true },
     ).orFail();
-    return { data: newLikes };
+    res.status(200).send({ data: newLikes });
+  } catch (err) {
+    if (err instanceof mongoose.Error.NotFoundError) {
+      next(new NotFoundError("Такой карточки не существует"));
+      return;
+    }
+    next(err);
   }
-
-  getResponse(res, request, next);
 }
 
-function removeLike(req, res, next) {
-  async function request() {
+async function removeLike(req, res, next) {
+  try {
     const userId = req.user._id;
     const id = req.params.cardId;
     const newLikes = await Card.findByIdAndUpdate(
@@ -60,9 +79,14 @@ function removeLike(req, res, next) {
       },
       { new: true },
     ).orFail();
-    return { data: newLikes };
+    res.status(200).send({ data: newLikes });
+  } catch (err) {
+    if (err instanceof mongoose.Error.DocumentNotFoundError) {
+      next(new NotFoundError("Такой карточки не существует"));
+      return;
+    }
+    next(err);
   }
-  getResponse(res, request, next);
 }
 
 export {
