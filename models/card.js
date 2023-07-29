@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import { pattern } from "../utils/config.js";
+import mongoose from 'mongoose';
+import { pattern } from '../utils/config.js';
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -13,7 +13,7 @@ const cardSchema = new mongoose.Schema({
     required: [true, "Поле 'link' должно быть заполнено"],
     validate: {
       validator: (v) => pattern.test(v),
-      message: "Некорректный URL",
+      message: 'Некорректный URL',
     },
   },
   owner: {
@@ -30,4 +30,4 @@ const cardSchema = new mongoose.Schema({
   },
 }, { versionKey: false });
 
-export default mongoose.model("card", cardSchema);
+export default mongoose.model('card', cardSchema);

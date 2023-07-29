@@ -1,17 +1,21 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
-import User from "../models/user.js";
-import ValidationError from "../errors/validation-error.js";
-import NotFoundError from "../errors/not-found-error.js";
-import AlreadyExistError from "../errors/already-exist-error.js";
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
+import User from '../models/user.js';
+import ValidationError from '../errors/validation-error.js';
+import NotFoundError from '../errors/not-found-error.js';
+import AlreadyExistError from '../errors/already-exist-error.js';
 
 async function getAllUsers(req, res, next) {
   try {
     const users = await User.find({});
     res.status(200).send({ data: users });
   } catch (err) {
-    next(new NotFoundError("Ничего не найдено"));
+    if (err instanceof mongoose.Error.DocumentNotFoundError) {
+      next(new NotFoundError('Ничего не найдено'));
+      return;
+    }
+    next(err);
   }
 }
 
@@ -22,7 +26,7 @@ async function getUser(req, res, next) {
     res.status(200).send({ data: user });
   } catch (err) {
     if (err instanceof mongoose.Error.DocumentNotFoundError) {
-      next(new NotFoundError("Такого пользователя не существует"));
+      next(new NotFoundError('Такого пользователя не существует'));
       return;
     }
     next(err);
@@ -54,7 +58,7 @@ async function addUser(req, res, next) {
       return;
     }
     if (err.code === 11000) {
-      next(new AlreadyExistError("Пользователь с таким Email уже существует"));
+      next(new AlreadyExistError('Пользователь с таким Email уже существует'));
       return;
     }
     next(err);
@@ -65,8 +69,8 @@ async function login(req, res, next) {
   try {
     const { email, password } = req.body;
     const user = await User.findUserByCredentials(email, password);
-    const token = jwt.sign({ _id: user._id }, "super-strong-secret", { expiresIn: "7d" });
-    res.cookie("jwt", token, {
+    const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
+    res.cookie('jwt', token, {
       maxAge: 36000000,
       httpOnly: true,
     });
@@ -100,7 +104,7 @@ async function updateUser(req, res, next) {
       return;
     }
     if (err instanceof mongoose.Error.NotFoundError) {
-      next(new NotFoundError("Такого пользователя не существует"));
+      next(new NotFoundError('Такого пользователя не существует'));
       return;
     }
     next(err);

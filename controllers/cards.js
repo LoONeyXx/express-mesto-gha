@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
-import Card from "../models/card.js";
-import AccessError from "../errors/access-error.js";
-import ValidationError from "../errors/validation-error.js";
-import NotFoundError from "../errors/not-found-error.js";
+import mongoose from 'mongoose';
+import Card from '../models/card.js';
+import AccessError from '../errors/access-error.js';
+import ValidationError from '../errors/validation-error.js';
+import NotFoundError from '../errors/not-found-error.js';
 
 async function getCards(req, res, next) {
   try {
@@ -39,10 +39,10 @@ async function deleteCard(req, res, next) {
       const data = await Card.deleteOne({ _id: cardId });
       res.status(200).send({ data });
     }
-    throw new AccessError("У вас нет прав на удаление чужих карточек");
+    throw new AccessError('У вас нет прав на удаление чужих карточек');
   } catch (err) {
     if (err instanceof mongoose.Error.DocumentNotFoundError) {
-      next(new NotFoundError("Такой карточки не существует"));
+      next(new NotFoundError('Такой карточки не существует'));
       return;
     }
     next(err);
@@ -61,7 +61,7 @@ async function addLike(req, res, next) {
     res.status(200).send({ data: newLikes });
   } catch (err) {
     if (err instanceof mongoose.Error.DocumentNotFoundError) {
-      next(new NotFoundError("Такой карточки не существует"));
+      next(new NotFoundError('Такой карточки не существует'));
       return;
     }
     next(err);
@@ -82,7 +82,7 @@ async function removeLike(req, res, next) {
     res.status(200).send({ data: newLikes });
   } catch (err) {
     if (err instanceof mongoose.Error.DocumentNotFoundError) {
-      next(new NotFoundError("Такой карточки не существует"));
+      next(new NotFoundError('Такой карточки не существует'));
       return;
     }
     next(err);

@@ -1,5 +1,5 @@
-import { celebrate, Joi } from "celebrate";
-import { pattern } from "./config.js";
+import { celebrate, Joi } from 'celebrate';
+import { pattern } from './config.js';
 
 export const idCardValidator = () => celebrate({
   params: Joi.object().keys({
